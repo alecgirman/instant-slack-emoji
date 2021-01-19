@@ -36,6 +36,7 @@ class Slack:
             print(f"Selenium driver {driver} is not supported")
             exit(1)
 
+        self._debug = env("DEBUG")
         self._browser.get("https://slack.com/")
 
     def open_google_login(self):
@@ -114,7 +115,10 @@ class Slack:
         pyautogui.press("Enter")
 
         save_xpath = "/html/body/div[6]/div/div/div[3]/div/button[2]"
-        self._browser.find_element_by_xpath(save_xpath).click()
+
+        # dont actually save the emoji if debugging
+        if not self._debug:
+            self._browser.find_element_by_xpath(save_xpath).click()
 
     def close(self):
         self._browser.close()
