@@ -20,11 +20,6 @@ workspace = env("SLACK_WORKSPACE")
 email = env("SLACK_EMAIL")
 password = env("SLACK_PASSWORD")
 
-# TODO: click() and text() function in Slack api
-# TODO: go straight to workspace login
-# TODO: get to browser slack faster
-
-
 # putting the slack class here because relative imports are hard
 class Slack:
     def __init__(self):
@@ -52,8 +47,7 @@ class Slack:
         manual_login.click()
 
         # Type the workspace name into the textbox with '.slack.com'
-        workspace_xpath = '//*[@id="domain"]'
-        workspace_textbox = self._browser.find_element_by_xpath(workspace_xpath)
+        workspace_textbox = self._browser.find_element_by_id("domain")
         workspace_textbox.send_keys(workspace)
 
         # click 'Continue'
@@ -61,8 +55,7 @@ class Slack:
         self._browser.find_element_by_xpath(continue_xpath).click()
 
         # click 'Continue with Google'
-        google_xpath = '//*[@id="google_login_button"]'
-        self._browser.find_element_by_xpath(google_xpath).click()
+        self._browser.find_element_by_id("google_login_button").click()
 
     # sign into slack using google account
     def login_with_google(self):
