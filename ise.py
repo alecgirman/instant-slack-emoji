@@ -14,6 +14,7 @@ from time import sleep
 from os import system
 from sys import argv
 
+
 load_dotenv()
 driver = env("SELENIUM_DRIVER", "firefox")
 workspace = env("SLACK_WORKSPACE")
@@ -124,19 +125,18 @@ class Slack:
 
 def run_proc(command: str) -> str:
     args = command.split(" ")  # turn command into array
-    result = subprocess.run(args, stdout=subprocess.PIPE)
-    return result.stdout.decode("utf-8")
+    result = subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    return result.returncode, result.stdout.decode("utf-8")
 
 
 # check xclip dependency
-if "not found" in run_proc("which xlip"):
+if run_proc("which xclip")[0] != 0:
     print("xclip not found!  Please install xclip in order for this to work.")
     print("\tUbuntu/Debian: sudo apt install xclip")
     print("\tArch: pacman -S xclip")
 
-
 # make sure the clipboard contains an image
-if "image/png" in run_proc("xclip -selection clipboard -t TARGETS -o"):
+if "image/png" in run_proc("xclip -selection clipboard -t TARGETS -o")[1]:
     filepath = f"/tmp/{uuid4()}.png"
     system(f"xclip -selection clipboard -t image/png -o > {filepath}")
 
