@@ -22,7 +22,8 @@ email = env("SLACK_EMAIL")
 password = env("SLACK_PASSWORD")
 
 
-class X:
+# e for element
+class E:
     continue_btn = "xpath:/html/body/main/div/div/div/div/div[2]/form/button"
     google_next = "xpath:/html/body/div[1]/div[1]/div[2]/div/div[2]/div/div/div[2]/div/div[2]/div/div[1]/div/div/button/div[2]"
     google_password = "xpath://input[@type='password']"
@@ -36,16 +37,10 @@ class X:
     add_emoji = "xpath:/html/body/div[6]/div/div/div/div/div/div[4]/button"
     upload_emoji = "xpath:/html/body/div[6]/div/div/div[2]/div/div[1]/div/div/div/div/form/ol[1]/li/div[3]/div[3]/button"
     save_emoji = "xpath:/html/body/div[6]/div/div/div[3]/div/button[2]"
-
-
-class ID:
     workspace_textbox = "id:domain"
     google_login = "id:google_login_button"
     google_email = "id:identifierId"
     emoji_name = "id:emojiname"
-
-
-class Text:
     signin = "text:Sign in"
     manual_login = "text:sign in manually instead"
 
@@ -66,60 +61,60 @@ class Slack:
 
     def open_google_login(self):
         # click sign in button
-        self._click(Text.signin)
+        self._click(E.signin)
 
-        self._click(Text.manual_login)
+        self._click(E.manual_login)
 
         # Type the workspace name into the textbox with '.slack.com'
-        self._type(ID.workspace_textbox, workspace)
+        self._type(E.workspace_textbox, workspace)
 
         # click 'Continue'
-        self._click(X.continue_btn)
+        self._click(E.continue_btn)
 
         # click 'Continue with Google'
-        self._click(ID.google_login)
+        self._click(E.google_login)
 
     # sign into slack using google account
     def login_with_google(self):
         # email textbox
-        self._type(ID.google_email, email)
-        self._click(X.google_next)
+        self._type(E.google_email, email)
+        self._click(E.google_next)
 
         sleep(2)  # I cant use _waitfor_xpath for some reason here...
 
         # enter credentials and sign in
-        self._type(X.google_password, password)
-        self._click(X.google_next)
+        self._type(E.google_password, password)
+        self._click(E.google_next)
 
     def continue_in_browser(self):
-        self._waitfor_xpath(X.continue_in_browser).click()
+        self._waitfor_xpath(E.continue_in_browser).click()
 
     def open_chat_with_slackbot(self):
-        self._click(X.slack_new_msg)
+        self._click(E.slack_new_msg)
 
         actions = ActionChains(self._browser)
         actions.send_keys("Slackbot")
         actions.perform()
 
-        slackbot_entry = self._waitfor_xpath(X.slack_slackbot)
+        slackbot_entry = self._waitfor_xpath(E.slack_slackbot)
         slackbot_entry.click()
-        self._click(X.slack_chat_textbox)
+        self._click(E.slack_chat_textbox)
 
     def open_emoji_panel(self):
-        self._click(X.emoji_panel)
+        self._click(E.emoji_panel)
 
     def add_emoji(self, name, filepath):
-        self._click(X.add_emoji)
+        self._click(E.add_emoji)
         sleep(0.1)
-        self._type(ID.emoji_name, name)
-        self._click(X.upload_emoji)
+        self._type(E.emoji_name, name)
+        self._click(E.upload_emoji)
 
         pyautogui.write(filepath)
         pyautogui.press("Enter")
 
         # dont actually save the emoji if debugging
         if not self._debug:
-            self._click(X.save_emoji)
+            self._click(E.save_emoji)
 
     def _element(self, target):
         if target.startswith("xpath:"):
