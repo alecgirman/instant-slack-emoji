@@ -48,6 +48,10 @@ class E:
 # putting the slack class here because relative imports are hard
 class Slack:
     def __init__(self):
+        self._debug = env("DEBUG", False)
+        if self._debug:
+            print("=== DEBUGGING MODE ===")
+
         if driver == "firefox":
             self._browser = webdriver.Firefox()
         elif driver == "chrome":
@@ -56,21 +60,9 @@ class Slack:
             print(f"Selenium driver {driver} is not supported")
             exit(1)
 
-        self._debug = env("DEBUG", False)
-        self._browser.get("https://slack.com/")
+        self._browser.get(f"https://{workspace}.slack.com/")
 
     def open_google_login(self):
-        # click sign in button
-        self._click(E.signin)
-
-        self._click(E.manual_login)
-
-        # Type the workspace name into the textbox with '.slack.com'
-        self._type(E.workspace_textbox, workspace)
-
-        # click 'Continue'
-        self._click(E.continue_btn)
-
         # click 'Continue with Google'
         self._click(E.google_login)
 
@@ -86,8 +78,10 @@ class Slack:
         self._type(E.google_password, password)
         self._click(E.google_next)
 
-    def continue_in_browser(self):
+    def launch_slack_app(self):
         self._waitfor_xpath(E.continue_in_browser).click()
+        # bypass the 'launch slack desktop' prompt by going back to the workspace after login
+        # self._browser.get(f"https://{workspace}.slack.com")
 
     def open_chat_with_slackbot(self):
         self._click(E.slack_new_msg)
@@ -166,7 +160,8 @@ if "image/png" in run_proc("xclip -selection clipboard -t TARGETS -o")[1]:
     slack = Slack()
     slack.open_google_login()
     slack.login_with_google()
-    slack.continue_in_browser()
+    sleep(0.25)
+    slack.launch_slack_app()
     slack.open_chat_with_slackbot()
     slack.open_emoji_panel()
     slack.add_emoji(name, filepath)
