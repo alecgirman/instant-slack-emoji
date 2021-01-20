@@ -68,13 +68,6 @@ class Slack:
         # click sign in button
         self._click(Text.signin)
 
-        # click button to sign in manually (do not send a code to email)
-        # manual_login = self._browser.find_element_by_link_text(
-        #     "sign in manually instead"
-        # )
-
-        # manual_login.click()
-
         self._click(Text.manual_login)
 
         # Type the workspace name into the textbox with '.slack.com'
