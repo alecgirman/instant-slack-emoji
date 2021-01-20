@@ -6,7 +6,7 @@ Quickly create a slack emoji
 ```sh
 sudo apt install python3-dev python3-tk
 pip3 install webdrivermanager selenium pyautogui python-dotenv envs
-sudo webdrivermanager firefox chrome
+sudo webdrivermanager firefox
 ```
 
 #### Configuring your env file
