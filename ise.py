@@ -21,6 +21,35 @@ workspace = env("SLACK_WORKSPACE")
 email = env("SLACK_EMAIL")
 password = env("SLACK_PASSWORD")
 
+
+class X:
+    continue_btn = "xpath:/html/body/main/div/div/div/div/div[2]/form/button"
+    google_next = "xpath:/html/body/div[1]/div[1]/div[2]/div/div[2]/div/div/div[2]/div/div[2]/div/div[1]/div/div/button/div[2]"
+    google_password = "xpath://input[@type='password']"
+    continue_in_browser = "xpath:/html/body/div[6]/div/div/div/div/div/button"
+    slack_new_msg = "xpath:/html/body/div[2]/div/div[2]/div[1]/div/div[1]/button"
+    slack_slackbot = (
+        "xpath:/html/body/div[6]/div/div/div/div/div/div/div/div/span/div/div/div/div"
+    )
+    slack_chat_textbox = "xpath:/html/body/div[2]/div/div[2]/div[3]/div/div[2]/div/div/div[3]/div/div[1]/div[1]/div[1]/div[1]"
+    emoji_panel = "xpath:/html/body/div[2]/div/div[2]/div[3]/div/div[2]/div/div/div[3]/div/div[1]/div[1]/div[2]/button[3]"
+    add_emoji = "xpath:/html/body/div[6]/div/div/div/div/div/div[4]/button"
+    upload_emoji = "xpath:/html/body/div[6]/div/div/div[2]/div/div[1]/div/div/div/div/form/ol[1]/li/div[3]/div[3]/button"
+    save_emoji = "xpath:/html/body/div[6]/div/div/div[3]/div/button[2]"
+
+
+class ID:
+    workspace_textbox = "id:domain"
+    google_login = "id:google_login_button"
+    google_email = "id:identifierId"
+    emoji_name = "id:emojiname"
+
+
+class Text:
+    signin = "text:Sign in"
+    manual_login = "text:sign in manually instead"
+
+
 # putting the slack class here because relative imports are hard
 class Slack:
     def __init__(self):
@@ -37,89 +66,93 @@ class Slack:
 
     def open_google_login(self):
         # click sign in button
-        login_button = self._browser.find_element_by_link_text("Sign in")
-        login_button.click()
+        self._click(Text.signin)
 
         # click button to sign in manually (do not send a code to email)
-        manual_login = self._browser.find_element_by_link_text(
-            "sign in manually instead"
-        )
+        # manual_login = self._browser.find_element_by_link_text(
+        #     "sign in manually instead"
+        # )
 
-        manual_login.click()
+        # manual_login.click()
+
+        self._click(Text.manual_login)
 
         # Type the workspace name into the textbox with '.slack.com'
-        workspace_textbox = self._browser.find_element_by_id("domain")
-        workspace_textbox.send_keys(workspace)
+        self._type(ID.workspace_textbox, workspace)
 
         # click 'Continue'
-        continue_xpath = "/html/body/main/div/div/div/div/div[2]/form/button"
-        self._browser.find_element_by_xpath(continue_xpath).click()
+        self._click(X.continue_btn)
 
         # click 'Continue with Google'
-        self._browser.find_element_by_id("google_login_button").click()
+        self._click(ID.google_login)
 
     # sign into slack using google account
     def login_with_google(self):
-        # next button
-        next_xpath = "/html/body/div[1]/div[1]/div[2]/div/div[2]/div/div/div[2]/div/div[2]/div/div[1]/div/div/button/div[2]"
-
         # email textbox
-        email_xpath = '//*[@id="identifierId"]'
-        self._browser.find_element_by_xpath(email_xpath).send_keys(email)
-        self._browser.find_element_by_xpath(next_xpath).click()
+        self._type(ID.google_email, email)
+        self._click(X.google_next)
 
         sleep(2)  # I cant use _waitfor_xpath for some reason here...
-        password_xpath = "//input[@type='password']"
 
         # enter credentials and sign in
-        self._browser.find_element_by_xpath(password_xpath).send_keys(password)
-        self._browser.find_element_by_xpath(next_xpath).click()
+        self._type(X.google_password, password)
+        self._click(X.google_next)
 
     def continue_in_browser(self):
-        self._waitfor_xpath("/html/body/div[6]/div/div/div/div/div/button").click()
+        self._waitfor_xpath(X.continue_in_browser).click()
 
     def open_chat_with_slackbot(self):
-        new_msg_xpath = "/html/body/div[2]/div/div[2]/div[1]/div/div[1]/button"
-        self._browser.find_element_by_xpath(new_msg_xpath).click()
+        self._click(X.slack_new_msg)
 
         actions = ActionChains(self._browser)
         actions.send_keys("Slackbot")
         actions.perform()
 
-        slackbot_entry = self._waitfor_xpath(
-            "/html/body/div[6]/div/div/div/div/div/div/div/div/span/div/div/div/div"
-        )
+        slackbot_entry = self._waitfor_xpath(X.slack_slackbot)
         slackbot_entry.click()
-        chat_xpath = "/html/body/div[2]/div/div[2]/div[3]/div/div[2]/div/div/div[3]/div/div[1]/div[1]/div[1]/div[1]"
-        self._browser.find_element_by_xpath(chat_xpath).click()
+        self._click(X.slack_chat_textbox)
 
     def open_emoji_panel(self):
-        emoji_xpath = "/html/body/div[2]/div/div[2]/div[3]/div/div[2]/div/div/div[3]/div/div[1]/div[1]/div[2]/button[3]"
-        self._browser.find_element_by_xpath(emoji_xpath).click()
+        self._click(X.emoji_panel)
 
     def add_emoji(self, name, filepath):
-        add_emoji_xpath = "/html/body/div[6]/div/div/div/div/div/div[4]/button"
-        self._browser.find_element_by_xpath(add_emoji_xpath).click()
+        self._click(X.add_emoji)
         sleep(0.1)
-        self._browser.find_element_by_id("emojiname").send_keys(name)
-        upload_xpath = "/html/body/div[6]/div/div/div[2]/div/div[1]/div/div/div/div/form/ol[1]/li/div[3]/div[3]/button"
-        self._browser.find_element_by_xpath(upload_xpath).click()
+        self._type(ID.emoji_name, name)
+        self._click(X.upload_emoji)
 
         pyautogui.write(filepath)
         pyautogui.press("Enter")
 
-        save_xpath = "/html/body/div[6]/div/div/div[3]/div/button[2]"
-
         # dont actually save the emoji if debugging
         if not self._debug:
-            self._browser.find_element_by_xpath(save_xpath).click()
+            self._click(X.save_emoji)
+
+    def _element(self, target):
+        if target.startswith("xpath:"):
+            xpath = target.split("xpath:")[1]
+            return self._browser.find_element_by_xpath(xpath)
+        elif target.startswith("id:"):
+            html_id = target.split("id:")[1]
+            return self._browser.find_element_by_id(html_id)
+        elif target.startswith("text:"):
+            text = target.split("text:")[1]
+            return self._browser.find_element_by_link_text(text)
+        else:
+            print(f"Invalid target {target}")
+
+    def _click(self, target):
+        self._element(target).click()
+
+    def _type(self, target, keys):
+        self._element(target).send_keys(keys)
 
     def close(self):
         self._browser.close()
 
     def _waitfor_xpath(self, xpath):
         return WebDriverWait(self._browser, 20).until(
-            EC.presence_of_element_located((By.XPATH, xpath))
+            EC.presence_of_element_located((By.XPATH, xpath.split("xpath:")[1]))
         )
 
 
