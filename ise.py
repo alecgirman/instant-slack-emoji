@@ -32,7 +32,7 @@ class Slack:
             print(f"Selenium driver {driver} is not supported")
             exit(1)
 
-        self._debug = env("DEBUG")
+        self._debug = env("DEBUG", False)
         self._browser.get("https://slack.com/")
 
     def open_google_login(self):
